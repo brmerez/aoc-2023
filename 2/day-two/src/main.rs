@@ -96,26 +96,17 @@ fn add_minimuns(game: &Vec<Vec<Pair>>) -> usize {
 }
 
 fn check_game_valid(game: &Vec<Vec<Pair>>) -> bool {
-    const MAX_R: Pair = Pair {
-        value: 12,
-        color: Colors::Red,
-    };
-    const MAX_G: Pair = Pair {
-        value: 13,
-        color: Colors::Green,
-    };
-    const MAX_B: Pair = Pair {
-        value: 14,
-        color: Colors::Blue,
-    };
+    const MAX_R: usize = 12;
+    const MAX_G: usize = 13;
+    const MAX_B: usize = 14;
 
     let mut game_valid: bool = true;
     for set in game {
         for pair in set {
             let valid: bool = match pair.color {
-                Colors::Red => pair.value <= MAX_R.value,
-                Colors::Green => pair.value <= MAX_G.value,
-                Colors::Blue => pair.value <= MAX_B.value,
+                Colors::Red => pair.value <= MAX_R,
+                Colors::Green => pair.value <= MAX_G,
+                Colors::Blue => pair.value <= MAX_B,
             };
 
             if !valid {
