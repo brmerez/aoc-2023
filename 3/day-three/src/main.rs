@@ -4,10 +4,24 @@ use std::fs;
 fn main() {
     let file = fs::read_to_string("input.txt").unwrap();
     let matches: Vec<LineMatch> = file.lines().map(|line| get_symbols(line)).collect();
-    matches.iter().fold(0, |val, m| val + get_sum_of_valid(m));
+    let total = matches.iter().enumerate().fold(0, |val, (index, m)| {
+        let index = index + 1;
+        let prev = matches.get(index - 1).unwrap();
+        let next = matches.get(index + 1).unwrap();
+
+        let r = get_sum_of_valid(m, prev, next);
+
+        val + r
+    });
+    println!("Total: {total}");
 }
 
-fn get_sum_of_valid(ln: &LineMatch) -> usize {
+fn get_sum_of_valid(ln: &LineMatch, prev: &LineMatch, next: &LineMatch) -> usize {
+    // Para cada número:
+    //      - Verificar as posições da linha anterior
+    //      - Verificar as posições adjacentes
+    //      - Verificar as posições da próxima linha (se houver!)
+
     todo!()
 }
 
