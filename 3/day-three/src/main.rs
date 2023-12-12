@@ -3,16 +3,16 @@ use std::fs;
 
 fn main() {
     let file = fs::read_to_string("input.txt").unwrap();
-    let matches: Vec<LineMatch> = file.lines().map(|line| get_symbols(line)).collect();
-    let total = matches.iter().enumerate().fold(0, |val, (index, m)| {
+    let numeros: Vec<LineMatch> = file.lines().map(|line| get_numbers(line)).collect();
+    let total = numeros.iter().enumerate().fold(0, |val, (index, m)| {
         let mut _index = index;
 
         if index > 0 {
             _index = index - 1;
         }
 
-        let prev = matches.get(_index);
-        let next = matches.get(index + 1);
+        let prev = numeros.get(_index);
+        let next = numeros.get(index + 1);
         println!("Linha {index}");
 
         val + get_sum_of_valid(m, prev, next)
@@ -21,11 +21,8 @@ fn main() {
 }
 
 fn get_sum_of_valid(ln: &LineMatch, prev: Option<&LineMatch>, next: Option<&LineMatch>) -> usize {
-    let mut line_total: usize = 0;
-
-    for num in ln.number_matches.iter() {
+    let total = ln.symbol_matches.iter().fold(0, |acc, num| {
         let b: usize = num.as_str().parse().unwrap();
-
         let mut valid = false;
 
         // Verificar a linha superior
@@ -42,11 +39,13 @@ fn get_sum_of_valid(ln: &LineMatch, prev: Option<&LineMatch>, next: Option<&Line
         }
 
         if valid {
-            line_total += b;
+            return acc + b;
         }
-    }
 
-    line_total
+        acc
+    });
+
+    total
 }
 
 fn check_adjacency(m: &Match, line: &str) -> bool {
@@ -66,7 +65,7 @@ fn check_adjacency(m: &Match, line: &str) -> bool {
     re_symbols.is_match(b)
 }
 
-fn get_symbols(str: &str) -> LineMatch {
+fn get_numbers(str: &str) -> LineMatch {
     let re_numbers: Regex = Regex::new(r"(\d+)").unwrap();
 
     let numbers: Vec<Match> = re_numbers
@@ -75,12 +74,12 @@ fn get_symbols(str: &str) -> LineMatch {
         .collect();
 
     LineMatch {
-        number_matches: numbers,
+        symbol_matches: numbers,
         full: str.to_owned(),
     }
 }
 
 struct LineMatch<'a> {
-    number_matches: Vec<Match<'a>>,
+    symbol_matches: Vec<Match<'a>>,
     full: String,
 }
