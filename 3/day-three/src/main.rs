@@ -3,7 +3,7 @@ use std::fs;
 
 fn main() {
     let file = fs::read_to_string("input.txt").unwrap();
-    let numeros: Vec<LineMatch> = file.lines().map(|line| get_numbers(line)).collect();
+    let numeros: Vec<LineMatch> = file.lines().map(get_symbols).collect();
     let total = numeros.iter().enumerate().fold(0, |val, (index, m)| {
         let mut _index = index;
 
@@ -11,8 +11,8 @@ fn main() {
             _index = index - 1;
         }
 
-        let prev = numeros.get(_index);
-        let next = numeros.get(index + 1);
+        let prev: Option<&LineMatch<'_>> = numeros.get(_index);
+        let next: Option<&LineMatch<'_>> = numeros.get(index + 1);
         println!("Linha {index}");
 
         val + get_sum_of_valid(m, prev, next)
@@ -51,26 +51,26 @@ fn get_sum_of_valid(ln: &LineMatch, prev: Option<&LineMatch>, next: Option<&Line
 fn check_adjacency(m: &Match, line: &str) -> bool {
     let re_symbols: Regex = Regex::new(r"[^0-9\.\s]").unwrap();
 
-    let ini = m.start();
-    let end = m.end();
-    let line_len = line.len();
+    let ini: usize = m.start();
+    let end: usize = m.end();
+    let line_len: usize = line.len();
 
-    let search_start = if ini > 0 { ini - 1 } else { ini };
-    let search_end = if end < line_len { end + 1 } else { end };
+    let search_start: usize = if ini > 0 { ini - 1 } else { ini };
+    let search_end: usize = if end < line_len { end + 1 } else { end };
 
     // Check adjacent
-    let b = &line[search_start..search_end];
+    let b: &str = &line[search_start..search_end];
     println!("{b}");
 
     re_symbols.is_match(b)
 }
 
-fn get_numbers(str: &str) -> LineMatch {
+fn get_symbols(str: &str) -> LineMatch {
     let re_numbers: Regex = Regex::new(r"(\d+)").unwrap();
 
     let numbers: Vec<Match> = re_numbers
         .captures_iter(str)
-        .map(|c| c.get(0).unwrap())
+        .map(|c: regex::Captures<'_>| c.get(0).unwrap())
         .collect();
 
     LineMatch {
