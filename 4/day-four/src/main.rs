@@ -1,11 +1,10 @@
 use std::fs;
 
 fn main() {
-    let file = fs::read_to_string("input.txt").unwrap();
+    let file: String = fs::read_to_string("input.txt").unwrap();
     let cards: Vec<Card> = file.lines().map(strip_line).collect();
-    let total = cards.iter().enumerate().fold(0, |acc, (index, card)| {
+    let total = cards.iter().fold(0, |acc, card| {
         let points = check_winners(card);
-        println!("Card {index}: {points} points");
         acc + points
     });
 
