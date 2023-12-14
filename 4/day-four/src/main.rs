@@ -2,11 +2,8 @@ use std::fs;
 
 fn main() {
     let file: String = fs::read_to_string("input.txt").unwrap();
-    let cards: Vec<Card> = file.lines().map(strip_line).collect();
-    let total = cards.iter().fold(0, |acc, card| {
-        let points = check_winners(card);
-        acc + points
-    });
+    let cards: Vec<Card> = file.lines().map(parse_line).collect();
+    let total = cards.iter().fold(0, |acc, card| acc + check_winners(card));
 
     println!("Total de pontos: {total}");
 }
@@ -15,19 +12,17 @@ fn check_winners(card: &Card) -> i32 {
     let points = card.played_numbers.iter().fold(0, |acc, played_num| {
         // Provavelmente há um jeito de fazer isso mais rápido
         // fazendo parse dos números, dando sort no vetor e usando binary search
-        if card.winning_numbers.contains(played_num) {
-            if acc == 0 {
-                return acc + 1;
-            }
-            return acc * 2;
+        if !card.winning_numbers.contains(played_num) {
+            return acc;
         }
-        acc
+
+        return if acc == 0 { acc + 1 } else { acc * 2 };
     });
 
-    points
+    return points;
 }
 
-fn strip_line(line: &str) -> Card {
+fn parse_line(line: &str) -> Card {
     let mut result = line.split(" | ");
     let winners = result.next().unwrap();
     let played = result.next().unwrap();
@@ -44,10 +39,10 @@ fn strip_line(line: &str) -> Card {
         .map(|num| num.trim().to_owned())
         .collect();
 
-    Card {
+    return Card {
         winning_numbers,
         played_numbers,
-    }
+    };
 }
 
 struct Card {
