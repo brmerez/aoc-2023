@@ -10,9 +10,7 @@ fn main() {
 
 fn check_winners(card: &Card) -> i32 {
     let points = card.played_numbers.iter().fold(0, |acc, played_num| {
-        // Provavelmente há um jeito de fazer isso mais rápido
-        // fazendo parse dos números, dando sort no vetor e usando binary search
-        if !card.winning_numbers.contains(played_num) {
+        if card.winning_numbers.binary_search(played_num).is_err() {
             return acc;
         }
 
@@ -27,17 +25,20 @@ fn parse_line(line: &str) -> Card {
     let winners = result.next().unwrap();
     let played = result.next().unwrap();
 
-    let winning_numbers: Vec<String> = winners
+    let mut winning_numbers: Vec<i32> = winners
         .split(" ")
         .filter(|num| !num.trim().is_empty())
-        .map(|num| num.trim().to_owned())
+        .map(|num| num.parse().unwrap())
         .collect();
 
-    let played_numbers: Vec<String> = played
+    let mut played_numbers: Vec<i32> = played
         .split(" ")
         .filter(|num| !num.trim().is_empty())
-        .map(|num| num.trim().to_owned())
+        .map(|num| num.parse().unwrap())
         .collect();
+
+    played_numbers.sort();
+    winning_numbers.sort();
 
     return Card {
         winning_numbers,
@@ -46,6 +47,6 @@ fn parse_line(line: &str) -> Card {
 }
 
 struct Card {
-    winning_numbers: Vec<String>,
-    played_numbers: Vec<String>,
+    winning_numbers: Vec<i32>,
+    played_numbers: Vec<i32>,
 }
